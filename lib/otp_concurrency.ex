@@ -1,13 +1,14 @@
 defmodule OtpConcurrency do
   use GenServer
 
+  @doc """
+  GenServer.init/1 callback
+  """
   def init(state), do: {:ok, state}
 
-  def start_link(state \\ []) do
-    inspecting = GenServer.start_link(__MODULE__, state, name: __MODULE__)
-    IO.inspect(inspecting)
-  end
-
+  @doc """
+  GenServer.handle_call/3 Callback
+  """
   def handle_call(:dequeue, _from, [value | state]) do
     {:reply, value, state}
   end
@@ -16,7 +17,23 @@ defmodule OtpConcurrency do
 
   def handle_call(:queue, _from, state), do: {:reply, state, state}
 
+  @doc """
+  GenServer.handle_cast/2 callback
+  """
+  def handle_cast({:enqueue, value}, state) do
+    {:noreply, state ++ [value]}
+  end
+
+  ### Client API / Helper functions
+
+  def start_link(state \\ []) do
+    inspecting = GenServer.start_link(__MODULE__, state, name: __MODULE__)
+    IO.inspect(inspecting)
+  end
+
   def queue, do: GenServer.call(__MODULE__, :queue)
 
   def dequeue, do: GenServer.call(__MODULE__, :dequeue)
+
+  def enqueue(value), do: GenServer.cast(__MODULE__, {:enqueue, value})
 end
