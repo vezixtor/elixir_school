@@ -42,4 +42,15 @@ defmodule Concurrency do
       {:DOWN, ref, :process, from_pid, reason} -> IO.puts("Exit reason: #{reason}")
     end
   end
+
+  def agents do
+    {:ok, agent} = Agent.start_link(fn -> [1, 2, 3] end)
+    IO.inspect(agent)
+
+    w = Agent.update(agent, fn (state) -> state ++ [4, 5] end)
+    IO.inspect(w)
+
+    w = Agent.get(agent, &(&1))
+    IO.inspect(w)
+  end
 end
