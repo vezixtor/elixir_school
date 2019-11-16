@@ -21,4 +21,25 @@ defmodule Concurrency do
     end
     listen()
   end
+
+  def process_linking do
+    spawn(Concurrency, :explode, [])
+  end
+
+  def run_process_linking do
+    Process.flag(:trap_exit, true)
+    spawn_link(Concurrency, :explode, [])
+    receive do
+      {:EXIT, from_pid, reason} -> IO.puts("Exit reason: #{reason}, PID: #{inspect from_pid}")
+    end
+  end
+
+  def explode, do: exit(:kaboom)
+
+  def process_monitoring do
+    {pid, ref} = spawn_monitor(Concurrency, :explode, [])
+    receive do
+      {:DOWN, ref, :process, from_pid, reason} -> IO.puts("Exit reason: #{reason}")
+    end
+  end
 end
