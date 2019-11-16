@@ -61,4 +61,17 @@ defmodule Concurrency do
     inspecting = Agent.get(Numbers, &(&1))
     IO.inspect(inspecting)
   end
+
+  def tasks do
+    task = Task.async(Concurrency, :double, [2000])
+    IO.inspect(task)
+
+    inspecting = Task.await(task)
+    IO.inspect(inspecting)
+  end
+
+  def double(x) do
+    :timer.sleep(2000)
+    x * 2
+  end
 end
