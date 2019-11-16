@@ -47,10 +47,18 @@ defmodule Concurrency do
     {:ok, agent} = Agent.start_link(fn -> [1, 2, 3] end)
     IO.inspect(agent)
 
-    w = Agent.update(agent, fn (state) -> state ++ [4, 5] end)
-    IO.inspect(w)
+    inspecting = Agent.update(agent, fn (state) -> state ++ [4, 5] end)
+    IO.inspect(inspecting)
 
-    w = Agent.get(agent, &(&1))
-    IO.inspect(w)
+    inspecting = Agent.get(agent, &(&1))
+    IO.inspect(inspecting)
+
+    IO.puts("by PID")
+
+    inspecting = Agent.start_link(fn -> [1, 2, 3] end, name: Numbers)
+    IO.inspect(inspecting)
+
+    inspecting = Agent.get(Numbers, &(&1))
+    IO.inspect(inspecting)
   end
 end
